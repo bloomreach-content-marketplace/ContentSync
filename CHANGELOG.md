@@ -79,3 +79,19 @@
 
 ### March 30, 2023
 - Add release notes from CHANGELOG.md into the application at /release-notes
+
+## [Unreleased]
+
+### Security
+- Added session management with token expiration after 8 hours
+- Implemented automatic logout on 30 minutes of inactivity
+- Added token validity checking before sensitive operations
+- Improved configuration storage with session tracking
+- Added automatic cleanup of sensitive data when browser tab/window closes
+
+### Changed
+- Refactored ConfigurationContext to handle session state
+- Improved error handling for expired or invalid tokens
+- Added redirection to configuration page when credentials are reset
+
+## [Previous Version]
