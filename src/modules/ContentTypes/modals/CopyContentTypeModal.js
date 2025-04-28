@@ -33,6 +33,7 @@ export default function CopyContentTypeModal({
   selectedRows,
   setSelectedRows,
   dependencyGraph,
+  setError
 }) {
   // State
   const [isProcessing, setIsProcessing] = useState(false)
@@ -41,13 +42,17 @@ export default function CopyContentTypeModal({
   const { appConfiguration } = useContext(ConfigurationContext)
   const { handleShowSnackbar } = useContext(ErrorContext)
 
+  let errorCounter = 0;
+
   const handleClose = () => {
     setShowModal(false)
+    errorCounter = 0;
   };
 
   const handleCopyContentTypes = async (event) => {
     event.preventDefault()
     await setIsProcessing(true)
+    await setError([])
 
     // Get all content types and dependencies
     // Flatten the array of arrays
@@ -103,12 +108,15 @@ export default function CopyContentTypeModal({
           .then(() => {
             console.log('Put Content Type Success')
           })
-          .catch(error => console.error('Put Content Type Error', error))
+          .catch(error => {console.error('Put Content Type Error', error.response.data); errorCounter++; setError((prev) => [...prev, `Copy operation for ${contentType} failed because: ${error.response?.data}`])})
       }
     }
 
+
+    if (errorCounter === 0){
+      handleShowSnackbar('success', 'Content Type(s) Copied')
+    }
     await setIsProcessing(false)
-    await handleShowSnackbar('success', 'Content Type(s) Copied')
     await setSelectedRows([])
     await setShowModal(false)
   }

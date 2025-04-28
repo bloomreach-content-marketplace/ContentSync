@@ -4,6 +4,7 @@ export const ConfigurationContext = createContext({});
 
 export const ConfigurationProvider = ({ children }) => {
   const [appConfiguration, setAppConfiguration] = useState({
+    saveToLocal: false,
     environments: {
       source: {
         environment: '',
@@ -34,7 +35,11 @@ export const ConfigurationProvider = ({ children }) => {
   }, [])
 
   const storeApplicationConfiguration = ({...props}) => {
-    localStorage.setItem('appConfiguration', JSON.stringify({...props}))
+    if(props.saveToLocal) {
+      localStorage.setItem('appConfiguration', JSON.stringify({...props}))
+    } else {
+      localStorage.removeItem('appConfiguration');
+    }
     setAppConfiguration({...props})
   }
 

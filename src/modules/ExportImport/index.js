@@ -17,9 +17,12 @@ import { ConfigurationContext } from 'src/contexts';
 const ExportImportModule = () => {
   const { appConfiguration } = useContext(ConfigurationContext)
   const { environment, xAuthToken, projectId } = appConfiguration.environments?.source
+  const { environment: targetEnvironment, xAuthToken: targetXAuthToken, projectId: targetProjectId } = appConfiguration.environments?.target
 
   const [projectsList, setProjectsList] = useState([])
   const [selectedProject, setSelectedProject] = useState(null)
+  const [targetProjectsList, setTargetProjectsList] = useState([])
+  const [targetSelectedProject, setTargetSelectedProject] = useState(null)
 
   useEffect(() => {
     // Get source projects list
@@ -36,15 +39,15 @@ const ExportImportModule = () => {
     }
 
     // Get target projects list
-    if (appConfiguration.environments?.target.environment && appConfiguration.environments?.target.xAuthToken) {
-      getAllProjects(appConfiguration.environments?.target.environment, appConfiguration.environments?.target.xAuthToken)
+    if (targetEnvironment && targetXAuthToken) {
+      getAllProjects(targetEnvironment, targetXAuthToken)
         .then((response) => {
           let projects = response.data
-          if (projectId) {
-            projects.find(project => project.id === projectId)
+          if (targetProjectId) {
+            projects.find(project => project.id === targetProjectId)
           }
-          setProjectsList(response.data)
-          setSelectedProject(projectId ? projects.find(project => project.id === projectId) : projects[0])
+          setTargetProjectsList(response.data)
+          setTargetSelectedProject(targetProjectId ? projects.find(project => project.id === targetProjectId) : projects[0])
         })
     }
   }, [appConfiguration])
@@ -69,16 +72,28 @@ const ExportImportModule = () => {
           />
         </Grid>
 
-        <Grid item xs={6}>
-          <ImportComponent
-            environment={environment}
-            xAuthToken={xAuthToken}
-            projectsList={projectsList}
-            setProjectsList={setProjectsList}
-            selectedProject={selectedProject}
-            setSelectedProject={setSelectedProject}
-          />
-        </Grid>
+        {targetEnvironment.trim() === '' && targetXAuthToken.trim() === ''
+          ? <Grid item xs={6}>
+              <ImportComponent
+                environment={environment}
+                xAuthToken={xAuthToken}
+                projectsList={projectsList}
+                setProjectsList={setProjectsList}
+                selectedProject={selectedProject}
+                setSelectedProject={setSelectedProject}
+              />
+            </Grid>
+          : <Grid item xs={6}>
+              <ImportComponent
+                environment={targetEnvironment}
+                xAuthToken={targetXAuthToken}
+                projectsList={targetProjectsList}
+                setProjectsList={setTargetProjectsList}
+                selectedProject={targetSelectedProject}
+                setSelectedProject={setTargetSelectedProject}
+              />
+            </Grid>
+        }
       </Grid>
     </Container>
   )

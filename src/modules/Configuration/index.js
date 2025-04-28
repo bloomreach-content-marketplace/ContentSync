@@ -14,10 +14,10 @@ import {
   Button,
   Card,
   CardContent,
-  CardHeader,
+  CardHeader, Checkbox,
   Container,
   Divider,
-  FormControl,
+  FormControl, FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -28,7 +28,7 @@ import {
   Stack,
   TextField,
   Tooltip,
-  Typography,
+  Typography
 } from '@mui/material'
 
 // Contexts
@@ -57,6 +57,8 @@ const ConfigurationModule = () => {
   const [sourceDeveloperProjects, setSourceDeveloperProjects] = useState([])
   const [targetDeveloperProjects, setTargetDeveloperProjects] = useState([])
 
+  const [saveToLocal, setSaveToLocal] = useState(appConfiguration?.saveToLocal)
+
   useEffect(() => {
     if (environment && apiKey) {
       const config = {
@@ -67,6 +69,7 @@ const ConfigurationModule = () => {
       setSourceConfig(config)
       storeApplicationConfiguration({
         ...appConfiguration,
+        saveToLocal: saveToLocal,
         environments: {
           source: config,
           target: targetConfig
@@ -78,6 +81,7 @@ const ConfigurationModule = () => {
   useEffect(() => {
     setSourceConfig(appConfiguration?.environments?.source)
     setTargetConfig(appConfiguration?.environments?.target)
+    setSaveToLocal(appConfiguration?.saveToLocal)
 
     if (appConfiguration?.environments?.source?.environment && appConfiguration?.environments?.source?.xAuthToken) {
       getAllProjects(appConfiguration?.environments?.source?.environment, appConfiguration?.environments?.source?.xAuthToken)
@@ -99,6 +103,7 @@ const ConfigurationModule = () => {
     await setTargetConfig(source)
     await storeApplicationConfiguration({
       ...appConfiguration,
+      saveToLocal: saveToLocal,
       environments: {
         source: target,
         target: source,
@@ -126,6 +131,7 @@ const ConfigurationModule = () => {
     event.preventDefault();
     storeApplicationConfiguration({
       ...appConfiguration,
+      saveToLocal: saveToLocal,
       environments: {
         source: sourceConfig,
         target: appConfiguration?.environments?.target
@@ -139,6 +145,7 @@ const ConfigurationModule = () => {
     event.preventDefault();
     storeApplicationConfiguration({
       ...appConfiguration,
+      saveToLocal: saveToLocal,
       environments: {
         source: appConfiguration?.environments?.source,
         target: targetConfig,
@@ -168,6 +175,9 @@ const ConfigurationModule = () => {
           alignItems='stretch'
           spacing={3}
         >
+          <Grid item xs={12}>
+            <FormControlLabel control={<Checkbox checked={saveToLocal} onChange={event => setSaveToLocal(event.target.checked)}/>} label='Save configuration to localStorage' />
+          </Grid>
           <Grid item xs={5}>
             <Environment
               title='Source Environment'
