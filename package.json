@@ -1,6 +1,6 @@
 {
   "name": "ContentSync",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "title": "Bloomreach ContentSync",
   "description": "High performance React template built with lots of powerful MUI (Material-UI) components across multiple product niches for fast & perfect apps development processes",
   "author": {
@@ -39,6 +39,7 @@
     "@mui/styled-engine": "^5.15.14",
     "@mui/styles": "5.8.0",
     "@mui/x-data-grid": "^5.17.20",
+    "@mui/x-date-pickers": "^7.28.3",
     "@mui/x-tree-view": "^7.1.1",
     "@next/third-parties": "^14.2.4",
     "axios": "^1.2.2",
@@ -46,6 +47,7 @@
     "clsx": "1.1.1",
     "context-api": "0.0.2",
     "date-fns": "2.28.0",
+    "dayjs": "^1.11.13",
     "dependency-graph": "^0.11.0",
     "eslint-config-next": "^14.2.3",
     "gray-matter": "^4.0.3",

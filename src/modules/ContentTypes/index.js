@@ -57,6 +57,8 @@ const ContentTypesModule = () => {
   const [isTargetProjectIncludeContentTypes, setIsTargetProjectIncludeContentTypes] = useState(false)
   const [dependencyGraph, setDependencyGraph] = useState(new DepGraph({ circular: true }));
 
+  const [error, setError] = useState([])
+
   // DataGrid State
   const [pageSize, setPageSize] = useState(20);
   const [selectedRows, setSelectedRows] = useState([])
@@ -152,9 +154,17 @@ const ContentTypesModule = () => {
 
     // Loop through content types and add dependencies
     contentTypes.forEach(async (contentType) => {
-      await contentType.fields.forEach(field =>
-        field.fieldGroupType && graph.addDependency(field.fieldGroupType, contentType.name)
-      )
+      await contentType.fields.forEach(async (field) => {
+        if (field.fieldGroupType) {
+          //Adds compounds used within the content type
+          await graph.addDependency(field.fieldGroupType, contentType.name)
+        } else if (field.type === 'Link') {
+          //Adds Content type Link restrictions
+          field.presentation.lookupFolderTypes?.forEach(async (linkType) => {
+            await graph.addDependency(linkType, contentType.name)
+          })
+        }
+      })
     })
 
     await setDependencyGraph(graph)
@@ -273,6 +283,18 @@ const ContentTypesModule = () => {
         </Grid>
       </PageTitleWrapper>
 
+      { error.length > 0 &&
+        <Container maxWidth={false}>
+          <Grid marginY={3}>
+            <Alert variant='filled' severity='error'>
+              {error.map((error, index) => (
+                <li key={index}>{error}</li>
+              ))}
+            </Alert>
+          </Grid>
+        </Container>
+      }
+
       <Container maxWidth={false}>
         <Grid
           container
@@ -358,7 +380,6 @@ const ContentTypesModule = () => {
         </Grid>
       </Container>
 
-      {/* TODO: Copy content types modal */}
       <CopyContentTypeModal
         showModal={showCopyModal}
         setShowModal={setShowCopyModal}
@@ -366,6 +387,8 @@ const ContentTypesModule = () => {
         setSelectedRows={setSelectedRows}
         contentTypes={contentTypes}
         dependencyGraph={dependencyGraph}
+        setError={setError}
+        error={error}
       />
 
       <DeleteContentTypeModal

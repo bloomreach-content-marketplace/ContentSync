@@ -85,7 +85,7 @@ export const ChannelListModule = () => {
           </Grid>
         }
 
-        {projects.map((project) => (
+        {projects.length > 0 ? projects.map((project) => (
           <Grid item xs={12} key={project}>
             <Card>
               <CardHeader title={project} sx={{ textAlign: 'left' }} />
@@ -111,7 +111,7 @@ export const ChannelListModule = () => {
               </CardContent>
             </Card>
           </Grid>
-        ))}
+        )) : <h1>The source project selected has no channels linked to it.</h1>}
       </Grid>
     </Container>
   )
