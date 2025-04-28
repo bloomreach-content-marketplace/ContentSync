@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react'
 
 // API
 import {
@@ -29,7 +29,11 @@ import {
 
 // Constants
 import { DATA_TYPES } from 'src/lib/constants';
-
+import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
+import dayjs from 'dayjs'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { ErrorContext } from '@/contexts'
 
 const ExportComponent = ({
   environment,
@@ -48,6 +52,10 @@ const ExportComponent = ({
   const [exportJobStatus, setExportJobStatus] = useState('')
   const [exportJobRunning, setExportJobRunning] = useState(false)
   const [downloadReady, setDownloadReady] = useState(false)
+
+  const [value, setValue] = useState(null)
+
+  const { handleShowSnackbar } = useContext(ErrorContext)
 
   const handleDataTypesChange = async (event) => {
     const name = event.target.name
@@ -70,14 +78,15 @@ const ExportComponent = ({
   }
 
   const handleSubmitExport = (event) => {
+    const isoWithoutMs = value && dayjs(value).toISOString().replace(/\.\d{3}Z$/, 'Z');
     event.preventDefault();
-    requestAnExport(environment, xAuthToken, sourcePath, null, selectedProject.id, dataTypes)
+    requestAnExport(environment, xAuthToken, sourcePath, isoWithoutMs? isoWithoutMs : null, selectedProject.id, dataTypes)
       .then(resp => {
         if(resp.data.status === 'STARTING') {
           setExportOperationId(resp.data.operationId)
           handleExportOperation(resp.data.operationId)
         }}
-      )
+      ).catch(error => handleShowSnackbar('error', `Export request failed: ${error.response.data}`))
   }
 
   const handleExportOperation = (operationId)  => {
@@ -185,14 +194,27 @@ const ExportComponent = ({
               value={sourcePath}
               onChange={(e) => setSourcePath(e.target.value)}
             />
-
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <MobileDateTimePicker
+                ampm={false}
+                disableFuture={true}
+                value={value}
+                onChange={(newValue) => setValue(newValue)}
+                slotProps={{
+                  textField: {
+                    error: false,
+                    helperText: 'Date is optional. This will be used for the modifiedAfter parameter.',
+                  },
+                }}
+              />
+            </LocalizationProvider>
           </div>
           <div>
             <Button
               sx={{ margin: 1 }}
               variant='contained'
               type='submit'
-              disabled={!sourcePath}
+              disabled={!sourcePath || !selectedProject}
             >
               Start export
             </Button>

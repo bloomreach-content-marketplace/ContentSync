@@ -3,6 +3,17 @@
 
 ## Version 2
 
+### 2.2.0 (April 28, 2025)
+#### New Features
+- Configuration: By default configuration is now saved in state. Optionally select to store configuration to localStorage
+- Content types: Dependencies are identified between types for Link field types. Improved error handling during failures by listing failed content types and a reason.
+- Export & Import: Add support for modifiedAfter parameter for delta exports. Display errors during export operations.
+
+#### Bug Fixes
+- Channels: When a project without channels is selected display an according message
+- Export & Import: Decouple source/target configurations for Export & Import and add assistive notes
+
+
 ### 2.1.0 (January 2, 2025)
 #### New Features
 - Added ability to copy a Project between environments, except for channel configuration changes and content type changes
